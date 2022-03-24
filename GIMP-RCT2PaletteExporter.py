@@ -82,7 +82,7 @@ Please note:
 
  - When exporting as *.DAT, the file name must be globally unique and not longer than 8 characters. Do not use a common name, because users cannot load your palette if they already have a RCT2 object installed with the same name.
 
- - To install the palette, place it into either '/Documents/OpenRCT2/object/' or '/Rollercoaster Tycoon 2/ObjData/'.
+ - To install the palette, place it into either '/Documents/OpenRCT2/object/' or '/RollerCoaster Tycoon 2/ObjData/'.
 	""",
 	"Exports this image as a RCT2 palette.",
 	"Basssiiie", "Basssiiie", "2021",
