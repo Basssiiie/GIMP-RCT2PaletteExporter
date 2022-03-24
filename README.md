@@ -5,7 +5,7 @@ A small plugin for GIMP that links GIMP to the RCTPaletteMaker tool to easily cr
 - Exports BMP's with the correct bitmap color info.
 - Creates a DAT palette file with your preferred name.
 
-![(Image of the export plugin in GIMP)](https://raw.githubusercontent.com/Basssiiie/GIMP-RCT2PaletteExporter/main/images/plugin.png)
+![(Image of the export plugin in GIMP)](https://github.com/Basssiiie/GIMP-RCT2PaletteExporter/raw/main/images/plugin.png)
 
 ## How to install
 
@@ -26,3 +26,6 @@ A small plugin for GIMP that links GIMP to the RCTPaletteMaker tool to easily cr
    - **Path to RCTPALMAKER.exe:** select the `RCTPALMAKER.exe` file, which will be used for creating the DAT file.
      - If `Create DAT file` is set to `no`, this option can be left empty to export the BMP only.
 4. Press `OK` to generate your palette file(s).
+5. (Optional) Copy the DAT file to one of the following folders to have it show up ingame.
+	- `/Documents/OpenRCT2/object/` (preferred)
+	- `/RollerCoaster Tycoon 2/ObjData/`
