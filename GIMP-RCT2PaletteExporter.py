@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+from datetime import date
 import os
 import struct
 import subprocess
@@ -9,31 +10,32 @@ import gimp
 
 # Strip bitmap color info (BMP v3)
 #  Thanks to https://stackoverflow.com/a/30531080
-def bmp_strip_color_info(bmp_file_name):
+#  and https://en.wikipedia.org/wiki/BMP_file_format#DIB_header_(bitmap_information_header)
+def bmp_strip_extra_header_data(bmp_file_name):
 	# Bitmap offsets
-	V4_HEADER_SIZE = 108
-	COLOR_INFO_SIZE = 68
+	FILE_SIZE_OFFSET = 2
+	PIXEL_START_OFFSET = 10
 	HEADER_OFFSET = 14
-	DATA_OFFSET_FIELD = 10
-	SIZE_OFFSET = 2
+	# Required sizes for 'BITMAPINFOHEADER'
+	REQUIRED_HEADER_SIZE = 40
+	REQUIRED_PIXEL_OFFSET = 54
 
 	# Open bitmap file
 	with open(bmp_file_name, "rb+") as bitmap_file:
 		data = bytearray(bitmap_file.read())
 		header_size = struct.unpack("I", data[HEADER_OFFSET: HEADER_OFFSET + 4])[0]
 
-		if header_size == 108:
-			# Remove 68 - the size for the extra data-chunk from both headers
-			data[HEADER_OFFSET: HEADER_OFFSET + 4] = struct.pack("I", V4_HEADER_SIZE - COLOR_INFO_SIZE)
-			data[DATA_OFFSET_FIELD: DATA_OFFSET_FIELD + 4] = struct.pack("I",
-				struct.unpack("I",data[DATA_OFFSET_FIELD: DATA_OFFSET_FIELD + 4])[0] - COLOR_INFO_SIZE)
+		if header_size != REQUIRED_HEADER_SIZE:
+			# Move pixel data to offset 54
+			original_pixel_start = struct.unpack("I", data[PIXEL_START_OFFSET: PIXEL_START_OFFSET + 4])[0]
+			data[REQUIRED_PIXEL_OFFSET:] = data[original_pixel_start:]
 
-			# Offset image data:
-			data[HEADER_OFFSET + header_size - COLOR_INFO_SIZE:] =  data[HEADER_OFFSET + header_size:]
-			data[SIZE_OFFSET: SIZE_OFFSET + 4] = struct.pack("I", len(data))
+			# Update new header size, start of pixel data and file size
+			data[HEADER_OFFSET: HEADER_OFFSET + 4] = struct.pack("I", REQUIRED_HEADER_SIZE)
+			data[PIXEL_START_OFFSET: PIXEL_START_OFFSET + 4] = struct.pack("I", REQUIRED_PIXEL_OFFSET)
+			data[FILE_SIZE_OFFSET: FILE_SIZE_OFFSET + 4] = struct.pack("I", len(data))
 
 		# Write new bitmap file to disk
-		#with open(bmp_file_name, "wb") as output_file:
 		bitmap_file.seek(0)
 		bitmap_file.write(data)
 		bitmap_file.truncate()
@@ -61,7 +63,7 @@ def export_palette(img, layer, output_folder, file_name, create_dat_file, palett
 	file_name_bmp = (file_name + ".bmp")
 	save_path = os.path.join(output_folder, (file_name_bmp))
 	gimpfu.pdb.gimp_file_save(img_copy, img_copy.layers[0], save_path, save_path)
-	bmp_strip_color_info(save_path)
+	bmp_strip_extra_header_data(save_path)
 
 	# Run PaletteMaker
 	if (create_dat_file):
@@ -85,7 +87,7 @@ Please note:
  - To install the palette, place it into either '/Documents/OpenRCT2/object/' or '/RollerCoaster Tycoon 2/ObjData/'.
 	""",
 	"Exports this image as a RCT2 palette.",
-	"Basssiiie", "Basssiiie", "2021",
+	"Basssiiie", "Basssiiie", str(date.today().year),
 	"<Image>/Export/RCT2 Palette",
 	"*",
 	[
