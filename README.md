@@ -53,4 +53,4 @@ You can see any load or runtime errors by launching GIMP from cmdline, for examp
 
 - [GIMP Python Documentation](https://www.gimp.org/docs/python/index.html)
 - [GIMP Library Reference Manual](https://www.manpagez.com/html/libgimp/libgimp-2.10.16/)
-- Procedure manual inside GIMP: `Filters -> Python-fu -> Console -> Browse...`
+- Procedure manual inside GIMP: `Filters` -> `Python-Fu` -> `Console` -> `Browse...`
